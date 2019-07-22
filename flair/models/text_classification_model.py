@@ -239,8 +239,8 @@ class TextClassifier(flair.nn.Model):
                 )
 
             result = Result(
-                main_score=metric.micro_avg_f_score(),
-                log_line=f"{metric.precision()}\t{metric.recall()}\t{metric.micro_avg_f_score()}",
+                main_score=metric.f_score(class_name='1'),
+                log_line=f"{metric.precision(class_name='1')}\t{metric.recall(class_name='1')}\t{metric.f_score(class_name='1')}",
                 log_header="PRECISION\tRECALL\tF1",
                 detailed_results=detailed_result,
             )
