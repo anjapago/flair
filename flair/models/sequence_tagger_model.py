@@ -4,16 +4,14 @@ from pathlib import Path
 
 import torch.nn
 from torch.nn.parameter import Parameter
-from torch.optim import Optimizer
 import torch.nn.functional as F
-from torch.utils.data.dataset import Dataset
 
 import flair.nn
 import torch
 
-import flair.embeddings
 from flair.data import Dictionary, Sentence, Token, Label
 from flair.datasets import DataLoader
+from flair.embeddings import TokenEmbeddings
 from flair.file_utils import cached_path
 
 from typing import List, Tuple, Union
@@ -71,7 +69,7 @@ class SequenceTagger(flair.nn.Model):
     def __init__(
         self,
         hidden_size: int,
-        embeddings: flair.embeddings.TokenEmbeddings,
+        embeddings: TokenEmbeddings,
         tag_dictionary: Dictionary,
         tag_type: str,
         use_crf: bool = True,
@@ -234,7 +232,10 @@ class SequenceTagger(flair.nn.Model):
         return model
 
     def evaluate(
-        self, data_loader: DataLoader, out_path: Path = None
+        self,
+        data_loader: DataLoader,
+        out_path: Path = None,
+        embeddings_storage_mode: str = "cpu",
     ) -> (Result, float):
 
         with torch.no_grad():
@@ -292,6 +293,8 @@ class SequenceTagger(flair.nn.Model):
                         else:
                             metric.add_tn(tag)
 
+                store_embeddings(batch, embeddings_storage_mode)
+
             eval_loss /= batch_no
 
             if out_path is not None:
@@ -321,10 +324,10 @@ class SequenceTagger(flair.nn.Model):
             return result, eval_loss
 
     def forward_loss(
-        self, sentences: Union[List[Sentence], Sentence], sort=True
+        self, data_points: Union[List[Sentence], Sentence], sort=True
     ) -> torch.tensor:
-        features = self.forward(sentences)
-        return self._calculate_loss(features, sentences)
+        features = self.forward(data_points)
+        return self._calculate_loss(features, data_points)
 
     def predict(
         self,
