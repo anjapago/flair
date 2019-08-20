@@ -684,9 +684,12 @@ class CSVClassificationDataset(FlairDataset):
 
         # most data sets have the token text in the first column, if not, pass 'text' as column
         self.text_columns: List[int] = []
+        self.lab_columns: List[int] = []
         for column in column_name_map:
             if column_name_map[column] == "text":
                 self.text_columns.append(column)
+            if column_name_map[column].startswith("label"):
+                self.lab_columns.append(column)
 
         with open(self.path_to_file, encoding="utf-8") as csv_file:
 
