@@ -335,6 +335,8 @@ class ModelTrainer:
                         ),
                         embeddings_storage_mode=embeddings_storage_mode,
                     )
+                    print("***************************************")
+                    print(dev_eval_result.detailed_results)
                     result_line += f"\t{dev_loss}\t{dev_eval_result.log_line}"
                     log.info(
                         f"DEV : loss {dev_loss} - score {dev_eval_result.main_score}"
