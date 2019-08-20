@@ -693,7 +693,13 @@ class CSVClassificationDataset(FlairDataset):
             csv_reader = csv.reader(csv_file, **fmtparams)
 
             if skip_header:
-                next(csv_reader, None)  # skip the headers
+                header = next(csv_reader, None)  # skip the headers
+                print("text columns")
+                for textcol in self.text_columns:
+                    print(header[textcol])
+                print("label columns")
+                for labcol in self.lab_columns:
+                    print(header[labcol])
 
             for row in csv_reader:
 
