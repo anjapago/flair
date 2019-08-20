@@ -171,6 +171,9 @@ class ModelTrainer:
         # prepare loss logging file and set up header
         loss_txt = init_output_file(base_path, "loss.tsv")
 
+        # prepare llogging detailed results
+        detailed_results_txt = init_output_file(base_path, "detailed_results.tsv")
+
         weight_extractor = WeightExtractor(base_path)
 
         optimizer: torch.optim.Optimizer = self.optimizer(
@@ -335,8 +338,17 @@ class ModelTrainer:
                         ),
                         embeddings_storage_mode=embeddings_storage_mode,
                     )
-                    print("***************************************")
-                    print(dev_eval_result.detailed_results)
+                    print("*********************saved detailed results******************")
+
+                    #print(dev_eval_result.detailed_results)
+                    with open(detailed_results_txt, "a") as f:
+                        # make headers on first epoch
+                        if epoch == 0:
+                            f.write(
+                                f"EPOCH\tTIMESTAMP\tBAD_EPOCHS\tLEARNING_RATE\tTRAIN_LOSS"
+                            )
+                            f.write(str(dev_eval_result.detailed_results))
+                    print("********************saved*******************")
                     result_line += f"\t{dev_loss}\t{dev_eval_result.log_line}"
                     log.info(
                         f"DEV : loss {dev_loss} - score {dev_eval_result.main_score}"
